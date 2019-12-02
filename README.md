@@ -5,7 +5,7 @@
 
 ## What?
 
-This is a small OLED on-air (TX) timer and RX (AF out), counting for how long you are transmitting or receiving a signal. This is compatible with every recent (in ham radio lingo, recent mean 20 last years) Yaesu HF transceiver.
+This is a under $10 OLED on-air (TX) timer and RX (AF out), counting for how long you are transmitting or receiving a signal. It is compatible with every recent (in ham radio lingo, recent mean 20 last years) Yaesu HF transceiver.
 
 ## How?
 
