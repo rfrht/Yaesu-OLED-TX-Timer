@@ -5,11 +5,16 @@
 
 ## What?
 
-This is a small OLED on-air (TX) timer and RX (AF out), counting for how long you are transmitting or receiving a signal. It is controlled by the `TUN/LIN` port `TX GND` pin for the TX and `DATA/RTTY` port `SQL` pin for RX.
+This is a small OLED on-air (TX) timer and RX (AF out), counting for how long you are transmitting or receiving a signal. This is compatible with every recent (in ham radio lingo, recent mean 20 last years) Yaesu HF transceiver.
 
-When the radio enter transmit mode, the `TX GND` signal will bring down to GND level a GPIO line in the Arduino, triggering the clock.
+## How?
 
-If the radio is actually receiving a signal (with audio output), the `SQL` line goes high to +5V and triggers the RX timer.
+It is controlled by the `TUN/LIN` port `TX GND` pin for the TX and `DATA/RTTY` port `SQL` pin for RX.
+In older Yaesu radios look for the `BAND DATA`, `LINEAR`, `ACC`, `DATA`, `RTTY/PKT` ports and check for the `TX GND` and `SQL` outputs and respective pinouts.
+
+When the radio enters transmit mode, the `TX GND` signal will bring the Arduino's GPIO line down to GND level, triggering the clock.
+
+If the radio is actually receiving a signal (open squelch), the `SQL` line goes high to +5V and triggers the RX timer.
 
 With no transmit and RX squelched, the screen goes dark and a small dot blinks at the right bottom corner of the display, as a watchdog.
 
@@ -41,6 +46,16 @@ Below is a simplified schematic of the entire enterprise. Do **not** forget the 
 
 *Connection diagram - click to enlarge*
 
+## Configurable stuff
+There are a few configurable stuff in [source code](/yaesu-oled-tx-timer.ino). Namely:
+
+* The GPIO lines:
+  * `TX_GND` - INPUT - The GPIO port receiving the radio's `TX_GND`
+  * `PULLUP` - OUTPUT - The GPIO port that will provide the +5V pull-up to `TX_GND`
+  * `RX_ON` - INPUT - The GPIO port receiving the radio's `SQL` signal. Can be commented out to disable the RX counter.
+* The threshold timer (`TIME_ALERT`), can be commented out to disable
+* The callsign/text to be shown at power on (`CALLSIGN`), can be commented out to disable
+
 ## Whistles and bells
 * It features a splash screen on power-on;
 * Also features a RX timer (smaller font size, in hh:mm:ss format). Only counts when squelch is open.
@@ -48,8 +63,8 @@ Below is a simplified schematic of the entire enterprise. Do **not** forget the 
 
 ## Any gotchas?
 
-Not really - So far super straight forward and no side effects.
+Just don't forget the pull-up and pull-down resistors!!!
 
 **But you use the 13.8V output of the radio to power the arduino?**
 
-Yup. This line is rated 1.5A and is more than enough to power your Arduino. Use a choked cable, just in case, for bonus points.
+Yup. This line is rated 1.5A and is more than enough to power your Arduino. The Arduino Uno voltage regulator takes up to 15V. Use a choked cable, just in case, for bonus points.
