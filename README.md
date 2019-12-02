@@ -44,6 +44,7 @@ Below is a simplified schematic of the entire enterprise. Do **not** forget the 
 ## Whistles and bells
 * It features a splash screen on power-on;
 * Also features a RX timer (smaller font size, in hh:mm:ss format). Only counts when squelch is open.
+* You can also configure a [alert threshold](https://github.com/rfrht/Yaesu-OLED-TX-Timer/blob/master/yaesu-oled-tx-timer.ino#L19) - when your TX exceeds this transmission time, the display inverts color schema for extra warning.
 
 ## Any gotchas?
 
