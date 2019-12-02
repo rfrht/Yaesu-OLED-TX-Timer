@@ -13,6 +13,10 @@ When the radio is outside transmit mode, a small dot blinks at the right bottom 
 
 A splashscreen is shown with your callsign (or your favourite text) on power-up.
 
+[![FT-991A and TX Timer](https://rf3.org:8443/q/yaesu-timer/yaesu-ft991a-tx-counter-scaled.jpg)](https://rf3.org:8443/q/yaesu-timer/yaesu-ft991a-tx-counter.jpg)
+
+*The OLED timer - 6 seconds of TX time*
+
 ## Why?
 
 As a ragchewer, I miss a TX timer. I'm not talking about a TOT; but just to know how long have I been transmitting.
