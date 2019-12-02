@@ -40,7 +40,7 @@ Since Yaesu won't be providing me this anytime soon in their firmwares, I decide
 
 This is dead simple and any Arduino-compatible board should be up to the task - If you are using other Arduino variants, just remember to fix the pin numbers in the source code.
 
-Below is a simplified schematic of the entire enterprise. Do **not** forget the resistor between GPIOs `3` and `13`.
+Below is a simplified schematic of the entire enterprise. **Notice** the resistors between GPIOs `2` & `13` and `GND` & `4`.
 
 [![Yaesu Arduino OLED timer Connection Diagram](https://rf3.org:8443/q/yaesu-timer/yaesu-arduino-tx-rx-timer-pinout.jpg)](https://rf3.org:8443/q/yaesu-timer/yaesu-arduino-tx-timer-pinout.png)
 
