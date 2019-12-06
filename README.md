@@ -7,7 +7,7 @@
 
 ## What?
 
-This is a under $10 OLED on-air (TX) timer and RX (AF out), counting for how long you are transmitting or receiving a signal. It is compatible with every recent (in ham radio lingo, recent mean 20 last years) HF transceiver.
+This is a under $10 OLED on-air (TX) timer and RX (AF out), counting for how long you are transmitting, squelched or receiving a signal. It is compatible with every recent (in ham radio lingo, recent mean 20 last years) HF transceiver.
 
 ## How?
 
@@ -15,9 +15,11 @@ It is controlled by the transceiver's Linear signaling port for the TX state, an
 
 When the radio enters transmit mode, the `TX GND` signal will bring the Arduino's GPIO line down to GND level, triggering the clock.
 
-If the radio is actually receiving a signal (open squelch), the `SQL` line goes high to +5V and triggers the RX timer.
+When the radio is receiving a signal (open squelch), the `SQL` line goes high to +5V and triggers the RX timer at the top right corner.
 
-With no transmit and RX squelched, the screen goes dark and a small dot blinks at the right bottom corner of the display, as a watchdog.
+With no transmit and RX squelched, a squelch counter starts starts at the bottom left of the screen.
+
+There's also a configuration that turns the screen dark in squelch mode and a small dot blinks at the right bottom corner of the display, as a watchdog.
 
 A splashscreen is shown with your callsign (or your favourite text) on power-up.
 
@@ -90,7 +92,8 @@ There are a few configurable stuff in [source code](/yaesu-oled-tx-timer.ino). N
 
 ## Whistles and bells
 * It features a splash screen on power-on;
-* Also features a RX timer (smaller font size, in hh:mm:ss format). Only counts when squelch is open.
+* Features a RX timer (smaller font size, in hh:mm:ss format). Only counts when squelch is open.
+* It also counts the squelched time (can be disabled).
 * You can also configure a [alert threshold](https://github.com/rfrht/Yaesu-OLED-TX-Timer/blob/master/yaesu-oled-tx-timer.ino#L19) - when your TX exceeds this transmission time, the display inverts color schema for extra warning.
 
 ## Any gotchas?
