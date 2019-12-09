@@ -89,7 +89,10 @@ void blinkingdot() {
 // Print Squelched timer
 void printsquelch() {
   // Reset timer if transitioned state
-  if (LastState != "Squelch") t=0;
+  if (LastState != "Squelch") {
+    t=0;
+    display.invertDisplay(false);
+  }
 
   // Calculating the seconds, minutes and hours
   s = t % 60;
@@ -134,7 +137,10 @@ void loop() {
       // (digitalRead(RX_ON) == LOW) {
       
         // Reset timer if transitioned state
-        if (LastState != "RX") t=0;
+        if (LastState != "RX") {
+          t=0;
+          display.invertDisplay(false);
+        }
 
         // Calculating the seconds, minutes and hours
         s = t % 60;
@@ -184,7 +190,10 @@ void loop() {
   // However if line is grounded... (meaning: TX is ON)
   else {
     // Reset timer if transitioned state
-    if (LastState != "TX") t=0 ;
+    if (LastState != "TX") {
+      t=0 ;
+      display.invertDisplay(false);
+    }
 
     // Calculating the seconds and minutes (no cap for minutes)
     s = t % 60;
