@@ -27,11 +27,19 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // Monitor squelched time? If not desired, comment.
 #define MONITOR_SQUELCH 1
 
+// Monitor uptime? If not desired, comment.
+#define MONITOR_UPTIME 1
+
 // General variables
 uint32_t t;         // Timer (secs)
 uint8_t h;          // Derived hours
 uint8_t m;          // Derived Minutes
 uint8_t s;          // Derived seconds (60-second fraction)
+uint32_t u;         // Uptime (secs)
+uint8_t hu;          // Derived uptime hours
+uint8_t mu;          // Derived uptime Minutes
+uint8_t su;          // Derived uptime seconds (60-second fraction)
+
 String LastState;   // The last active state used for proper timer tracking
 
 void setup() {
@@ -77,6 +85,7 @@ void setup() {
   pinMode(TX_GND, INPUT);
 }
 
+#ifndef MONITOR_SQUELCH
 // Blinking dot function
 void blinkingdot() {
   display.clearDisplay();
@@ -85,6 +94,28 @@ void blinkingdot() {
   display.display();
   delay(500);
 }
+#endif
+
+#ifdef MONITOR_UPTIME
+// Print the current uptime
+void print_uptime(){
+  u = millis()/1000;
+  su = u % 60;
+  mu = u / 60 % 60;
+  hu = u / 3600;
+  display.setTextSize(1);  // Smaller size
+  display.setCursor(0, 0); // Bottom top of the screen
+
+  // Populate the timer. Used the 'if' trick to pad the seconds and minutes with a zero
+  // when the actual number count is less than 10
+  if (hu < 10) display.print(0);
+  display.print(hu); display.print(":");
+  if (mu < 10) display.print(0);
+  display.print(mu); display.print(":");
+  if (su < 10) display.print(0);
+  display.print(su);
+}
+#endif
 
 // Print Squelched timer
 void printsquelch() {
@@ -101,6 +132,11 @@ void printsquelch() {
 
   // Clear the display buffer and prepare for new data
   display.clearDisplay();
+
+  #ifdef MONITOR_UPTIME
+  print_uptime();
+  #endif
+
   display.setTextSize(1);  // Smaller size
   display.setCursor(0,25); // Bottom left of the screen
 
@@ -121,7 +157,6 @@ void printsquelch() {
   t++;
   LastState = "Squelch";
 }
-
 
 void loop() {
     // If voltage is present - meaning no Transmission; radio receiving or squelched
@@ -149,6 +184,9 @@ void loop() {
 
         // Clear the display buffer and prepare for new data
         display.clearDisplay();
+        #ifdef MONITOR_UPTIME
+        print_uptime();
+        #endif
         display.setTextSize(1);  // Smaller size
         display.setCursor(80,0); // Better screen adjustment
 

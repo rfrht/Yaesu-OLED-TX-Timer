@@ -7,7 +7,7 @@
 
 ## What?
 
-This is a under $10 OLED on-air (TX) timer and RX (AF out), counting for how long you are transmitting, squelched or receiving a signal. It is compatible with every recent (in ham radio lingo, recent mean 20 last years) HF transceiver.
+This is a under $10 OLED on-air (TX) timer and RX (AF out), counting for how long you are transmitting, squelched or receiving a signal. It is compatible with every recent (in ham radio lingo, recent mean 20 last years) HF transceiver. It also prints for how long is your equipment turned on.
 
 ## How?
 
@@ -93,6 +93,7 @@ There are a few configurable stuff in [source code](/yaesu-oled-tx-timer.ino). N
 ## Whistles and bells
 * It features a splash screen on power-on;
 * Features a RX timer (smaller font size, in hh:mm:ss format). Only counts when squelch is open.
+* The current system uptime is also printed during RX/Squelch time, at the top right of the screen (can be disabled)
 * It also counts the squelched time (can be disabled).
 * You can also configure a [alert threshold](https://github.com/rfrht/Yaesu-OLED-TX-Timer/blob/master/yaesu-oled-tx-timer.ino#L19) - when your TX exceeds this transmission time, the display inverts color schema for extra warning.
 
