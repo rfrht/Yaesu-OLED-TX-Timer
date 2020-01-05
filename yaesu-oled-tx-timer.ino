@@ -30,15 +30,17 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // Monitor uptime? If not desired, comment.
 #define MONITOR_UPTIME 1
 
+// Print SQ/RX state? If not desired, comment.
+#define MONITOR_STATE 1
+
 // General variables
 uint32_t t;         // Timer (secs)
 uint8_t h;          // Derived hours
 uint8_t m;          // Derived Minutes
 uint8_t s;          // Derived seconds (60-second fraction)
 uint32_t u;         // Uptime (secs)
-uint8_t hu;          // Derived uptime hours
-uint8_t mu;          // Derived uptime Minutes
-uint8_t su;          // Derived uptime seconds (60-second fraction)
+uint8_t hu;         // Derived uptime hours
+uint8_t mu;         // Derived uptime Minutes
 
 String LastState;   // The last active state used for proper timer tracking
 
@@ -100,20 +102,21 @@ void blinkingdot() {
 // Print the current uptime
 void print_uptime(){
   u = millis()/1000;
-  su = u % 60;
   mu = u / 60 % 60;
   hu = u / 3600;
-  display.setTextSize(1);  // Smaller size
+  display.setTextSize(2);  // Medium size
   display.setCursor(0, 0); // Bottom top of the screen
 
   // Populate the timer. Used the 'if' trick to pad the seconds and minutes with a zero
-  // when the actual number count is less than 10
+  // when the actual number count is less than 10.
+  // Hour-Minute only.
   if (hu < 10) display.print(0);
   display.print(hu); display.print(":");
   if (mu < 10) display.print(0);
-  display.print(mu); display.print(":");
-  if (su < 10) display.print(0);
-  display.print(su);
+  display.print(mu);
+  display.setTextSize(1);
+  display.setCursor(12,24);
+  display.print("Uptime");
 }
 #endif
 
@@ -137,8 +140,14 @@ void printsquelch() {
   print_uptime();
   #endif
 
+  #ifdef MONITOR_STATE
+  display.setTextSize(2);
+  display.setCursor(92,0);
+  display.print("SQ");
+  #endif
+
   display.setTextSize(1);  // Smaller size
-  display.setCursor(0,25); // Bottom left of the screen
+  display.setCursor(80,25); // Bottom left of the screen
 
   // Populate the timer. Used the 'if' trick to pad the seconds and minutes with a zero
   // when the actual number count is less than 10
@@ -186,6 +195,11 @@ void loop() {
         display.clearDisplay();
         #ifdef MONITOR_UPTIME
         print_uptime();
+        #endif
+        #ifdef MONITOR_STATE
+        display.setTextSize(2);
+        display.setCursor(92,15);
+        display.print("RX");
         #endif
         display.setTextSize(1);  // Smaller size
         display.setCursor(80,0); // Better screen adjustment
