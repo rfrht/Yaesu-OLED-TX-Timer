@@ -6,7 +6,7 @@
 [Video demo](https://www.youtube.com/watch?v=AhdzXkJfJBs)
 
 ## What?
-This is a under $10 OLED on-air (TX) timer and RX (AF out), counting for how long you are transmitting, squelched or receiving a signal. It is compatible with every recent (in ham radio lingo, recent mean 20 last years) HF transceiver. It also prints for how long is your equipment turned on.
+This is a under $10 OLED on-air (TX) timer and RX (AF out), counting for how long you are transmitting, squelched or receiving a signal. It is compatible with every recent (in ham radio lingo, recent mean 20 last years) HF transceiver. It also prints for how long is your equipment turned on (uptime) in HH:MM format when not in transmit mode.
 
 Audio squelched | Playing audio (AF out)
 ----------------|-----------------------
