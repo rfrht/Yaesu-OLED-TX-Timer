@@ -6,11 +6,17 @@
 [Video demo](https://www.youtube.com/watch?v=AhdzXkJfJBs)
 
 ## What?
-
 This is a under $10 OLED on-air (TX) timer and RX (AF out), counting for how long you are transmitting, squelched or receiving a signal. It is compatible with every recent (in ham radio lingo, recent mean 20 last years) HF transceiver. It also prints for how long is your equipment turned on.
 
-## How?
+Audio squelched | Playing audio (AF out)
+----------------|-----------------------
+![Timer - Squelched mode](https://rf3.org:8443/q/yaesu-timer/timer-squelched.jpg) | ![Timer - AF receive mode](https://rf3.org:8443/q/yaesu-timer/timer-receiving.jpg)
 
+Transmit mode | Transmit mode over threshold
+--------------|-----------------------------
+![Transmit mode](https://rf3.org:8443/q/yaesu-timer/timer-transmitting.jpg) | ![Timer - Transmit mode over threshold](https://rf3.org:8443/q/yaesu-timer/timer-transmitting-warning.jpg)
+
+## How?
 It is controlled by the transceiver's Linear signaling port for the TX state, and the Squelch pin present in some radios to detect the RX AF out or squelched state.
 
 When the radio enters transmit mode, the `TX GND` signal will bring the Arduino's GPIO line down to GND level, triggering the clock.
