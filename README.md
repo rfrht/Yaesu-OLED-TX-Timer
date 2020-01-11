@@ -1,4 +1,4 @@
-# Amaterur Radio OLED TX and RX Timer
+# Amateur Radio OLED TX and RX Timer
 *An TX/RX timer in a OLED display controlled by an Arduino*
 
 *Compatible with Yaesu, Icom, Kenwood and other brands*
