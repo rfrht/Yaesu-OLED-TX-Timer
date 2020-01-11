@@ -12,9 +12,9 @@ Audio squelched | Playing audio (AF out)
 ----------------|-----------------------
 ![Timer - Squelched mode](https://rf3.org:8443/q/yaesu-timer/timer-squelched.jpg) | ![Timer - AF receive mode](https://rf3.org:8443/q/yaesu-timer/timer-receiving.jpg)
 
-Transmit mode | Transmit mode over threshold
+Transmit mode | Transmit mode - exceeded TX time threshold
 --------------|-----------------------------
-![Transmit mode](https://rf3.org:8443/q/yaesu-timer/timer-transmitting.jpg) | ![Timer - Transmit mode over threshold](https://rf3.org:8443/q/yaesu-timer/timer-transmitting-warning.jpg)
+![Transmit mode](https://rf3.org:8443/q/yaesu-timer/timer-transmitting.jpg) | ![Timer - Transmit mode - exceeded time threshold](https://rf3.org:8443/q/yaesu-timer/timer-transmitting-warning.jpg)
 
 ## How?
 It is controlled by the transceiver's Linear signaling port for the TX state, and the Squelch pin present in some radios to detect the RX AF out or squelched state.
