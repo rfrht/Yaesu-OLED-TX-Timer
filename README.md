@@ -16,6 +16,10 @@ Transmit mode | Transmit mode - exceeded TX time threshold
 --------------|-----------------------------
 ![Transmit mode](https://rf3.org:8443/q/yaesu-timer/timer-transmitting.jpg) | ![Timer - Transmit mode - exceeded time threshold](https://rf3.org:8443/q/yaesu-timer/timer-transmitting-warning.jpg)
 
+Audio squelched + Temperature Monitor | Playing audio (AF out) + Temperature Monitor
+----------------|-----------------------
+![Timer - Squelched mode plus Temperature monitor](https://rf3.org:8443/q/yaesu-timer/temp-sq.jpg) | ![Timer - AF receive mode plus Temperature monitor](https://rf3.org:8443/q/yaesu-timer/temp-rx.jpg)
+
 ## How?
 It is controlled by the transceiver's Linear signaling port for the TX state, and the Squelch pin present in some radios to detect the RX AF out or squelched state.
 
@@ -86,6 +90,17 @@ Kenwood equipments does not provide a 13.8V port for powering the board - Tap it
 
 * Now for the RX, look for the squelch pin - not every radio provides it. Be sure to check the level as well; some signals the squelch open in a +5V (Yaesu), others (Kenwood and Icom) signals squelch open as GND level. **DOUBLE CHECK THE VOLTAGE LEVEL** - Your arduino will release the magic smoke if you drive more than 5 volt in the GPIO line!
 
+## Bonus points: A temperature sensor.
+The code provides support to the [LM35 temperature sensor](https://www.digikey.com/products/en/sensors-transducers/temperature-sensors-analog-and-digital-output/518?FV=-8%7C518&quantity=0&ColumnSort=1000011&page=1&k=lm35&pageSize=25). In my usage, I have it attached to my transceiver chassis to monitor its temperature. Wiring it is super simple:
+
+![LM-35 Arduino Wiring Diagram](https://rf3.org:8443/q/yaesu-timer/arduino-lm35-schema.jpg)
+
+That's it. Just wiring the leads straight to the Arduino connector.
+
+In order to sense target temperature in a bit longer distance, consider using headphone cable: Wire the copper mesh to `ground`, the red wire to `+5V` and the sensor output to the white wire. Wrap everything with thermal retractible isolator. Mine is one foot long and I have no problems with RF. See the below image:
+
+![LM-35 wired in headphone cable](https://rf3.org:8443/q/yaesu-timer/lm-35-cable.jpg)
+
 ## Configurable stuff
 There are a few configurable stuff in [source code](/yaesu-oled-tx-timer.ino). Namely:
 
@@ -95,6 +110,7 @@ There are a few configurable stuff in [source code](/yaesu-oled-tx-timer.ino). N
   * `RX_ON` - INPUT - The GPIO port receiving the radio's `SQL` signal. Can be commented out to disable the RX counter.
 * The threshold timer (`TIME_ALERT`), can be commented out to disable
 * The callsign/text to be shown at power on (`CALLSIGN`), can be commented out to disable
+* The temperature monitor is enabled by default. If you are not going to use it, ensure to comment out the line `#define TEMP_SENS`
 
 ## Whistles and bells
 * It features a splash screen on power-on;
