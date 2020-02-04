@@ -10,6 +10,10 @@
 #define OLED_RESET     4  // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+// Are we using a temperature sensor? If we are not, comment this line.
+// The Temperature Sensor code is compatible with LM-35 sensors.
+#define TEMP_SENS      A0 // The Port where the temperature is being read
+
 // Configure the GPIO pins
 #define TX_GND         2  // The GPIO pin where you connected the TXGND signal
 #define PULLUP        13  // The GPIO pin that is driving TXGND up
@@ -22,7 +26,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define TIME_ALERT 360    // 6 minutes alert
 
 // Your callsign. Comment out to disable splash screen.
-#define CALLSIGN "PY2RAF"
+//#define CALLSIGN "PY2RAF"
 
 // Monitor squelched time? If not desired, comment.
 #define MONITOR_SQUELCH 1
@@ -41,6 +45,7 @@ uint8_t s;          // Derived seconds (60-second fraction)
 uint32_t u;         // Uptime (secs)
 uint8_t hu;         // Derived uptime hours
 uint8_t mu;         // Derived uptime Minutes
+int temperature;    // Current temp; Celsius
 
 String LastState;   // The last active state used for proper timer tracking
 
@@ -104,19 +109,33 @@ void print_uptime(){
   u = millis()/1000;
   mu = u / 60 % 60;
   hu = u / 3600;
+
+  // Uptime block
   display.setTextSize(2);  // Medium size
   display.setCursor(0, 0); // Bottom top of the screen
-
-  // Populate the timer. Used the 'if' trick to pad the seconds and minutes with a zero
-  // when the actual number count is less than 10.
-  // Hour-Minute only.
   if (hu < 10) display.print(0);
-  display.print(hu); display.print(":");
+  display.print(hu); display.print("h");
   if (mu < 10) display.print(0);
   display.print(mu);
   display.setTextSize(1);
+
+  // The temperature block
+  #ifdef TEMP_SENS
+  // The uptime text
+  display.setCursor(12,16);
+  display.print("Uptime");
+  // The temperature info
+  temperature = (float(analogRead(TEMP_SENS))*5/(1023))/0.01;
+  display.setCursor(7,25);
+  display.print("Temp:");
+  display.print(temperature);
+  display.print("C");
+  #else
+  // If no temperature selected, just print uptime.
   display.setCursor(12,24);
   display.print("Uptime");
+  #endif
+
 }
 #endif
 
