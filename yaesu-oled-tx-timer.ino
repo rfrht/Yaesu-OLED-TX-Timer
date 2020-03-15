@@ -28,6 +28,9 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // Your callsign. Comment out to disable splash screen.
 //#define CALLSIGN "PY2RAF"
 
+// Do we want to show the radio temperature in TX mode?
+#define TEMP_ON_TX 1
+
 // Monitor squelched time? If not desired, comment.
 #define MONITOR_SQUELCH 1
 
@@ -278,9 +281,27 @@ void loop() {
     // Populate the timer. Used the 'if' trick to pad the seconds and minutes with a zero
     // when the actual number count is less than 10
     if (m < 10) display.print(0);
-    display.print(m); display.print(":");
+    display.print(m); display.print(" ");
     if (s < 10) display.print(0);
     display.print(s);
+    
+    #ifdef TEMP_SENS
+    #ifdef TEMP_ON_TX
+    temperature = (float(analogRead(TEMP_SENS))*5/(1023))/0.01;
+    display.drawRect(54,9,18,15,WHITE);
+    display.setTextSize(1);
+    display.setCursor(57,13);
+    display.print(temperature);
+    #else
+    display.setTextSize(4);
+    display.setCursor(55,2); // Print colon
+    display.print(":");
+    #endif
+    #else
+    display.setTextSize(4);
+    display.setCursor(55,2); // Print colon
+    display.print(":");
+    #endif
 
     // Are we over time alert threshold?
     #ifdef TIME_ALERT 
