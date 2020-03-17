@@ -17,28 +17,32 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // Configure the GPIO pins
 #define TX_GND         2  // The GPIO pin where you connected the TXGND signal
 #define PULLUP        13  // The GPIO pin that is driving TXGND up
+#define GPIO_FAN      10  // The GPIO pin where we control the fan relay.
 #define RX_ON          4  // The GPIO pin where you connected the SQL signal
                           // Comment out to disable monitoring RX.
 
 // Configure a time threshold (seconds)
 // When reaching this threshold, the display will invert so it can catch
 // your attention. 
-#define TIME_ALERT 360    // 6 minutes alert
+#define TIME_ALERT      360    // 6 minutes alert
 
 // Your callsign. Comment out to disable splash screen.
-//#define CALLSIGN "PY2RAF"
+#define CALLSIGN "PY2RAF"
 
 // Do we want to show the radio temperature in TX mode?
-#define TEMP_ON_TX 1
+#define TEMP_ON_TX      1
+
+// Temperature Threshold - kicks in the fan when larger than this
+#define TEMP_THRESHOLD  33
 
 // Monitor squelched time? If not desired, comment.
 #define MONITOR_SQUELCH 1
 
 // Monitor uptime? If not desired, comment.
-#define MONITOR_UPTIME 1
+#define MONITOR_UPTIME  1
 
 // Print SQ/RX state? If not desired, comment.
-#define MONITOR_STATE 1
+#define MONITOR_STATE   1
 
 // General variables
 uint32_t t;         // Timer (secs)
@@ -48,7 +52,10 @@ uint8_t s;          // Derived seconds (60-second fraction)
 uint32_t u;         // Uptime (secs)
 uint8_t hu;         // Derived uptime hours
 uint8_t mu;         // Derived uptime Minutes
-int temperature;    // Current temp; Celsius
+int temperature;        // Current temp; Celsius
+int temp_high_counter;  // Temperature above Threshold counter
+int temp_low_counter;   // Temperature under Threshold counter
+bool fan_state;         // Self Explanatory
 
 String LastState;   // The last active state used for proper timer tracking
 
@@ -65,6 +72,12 @@ void setup() {
   #ifdef RX_ON
     pinMode(RX_ON, INPUT);
   #endif
+
+  #ifdef GPIO_FAN // If we are controlling a fan...
+    pinMode(GPIO_FAN, OUTPUT);
+    digitalWrite(GPIO_FAN, LOW);
+  #endif
+
 
   // Splash Screen
   #ifdef CALLSIGN
@@ -128,11 +141,19 @@ void print_uptime(){
   display.setCursor(12,16);
   display.print("Uptime");
   // The temperature info
-  temperature = (float(analogRead(TEMP_SENS))*5/(1023))/0.01;
   display.setCursor(7,25);
   display.print("Temp:");
   display.print(temperature);
   display.print("C");
+
+  // Blink a dot when fan is on
+  #ifdef GPIO_FAN
+    if (fan_state == 1) {
+      if ( millis() / 1000 % 2 == 0 ) {
+        display.setCursor(69,15);
+        display.print((char)7); } } 
+  #endif
+
   #else
   // If no temperature selected, just print uptime.
   display.setCursor(12,24);
@@ -190,18 +211,43 @@ void printsquelch() {
 }
 
 void loop() {
-    // If voltage is present - meaning no Transmission; radio receiving or squelched
-    if (digitalRead(TX_GND) == HIGH) {
+  #ifdef TEMP_SENS
+  temperature = (float(analogRead(TEMP_SENS))*5/(1023))/0.01;
+  #endif
 
-      // If we are monitoring RX time too
-      #ifdef RX_ON
+  // Control logic for fan. Two minutes to chill off if temperature gets below threshold,
+  // 15 seconds to kick in if temperature gets above threshold.
+  #ifdef GPIO_FAN
+  if (temperature > TEMP_THRESHOLD) {
+    temp_high_counter++;
+    temp_low_counter=0; }
+  else if (fan_state == 1 && temp_low_counter < 120 ) {
+    temp_low_counter++;
+    temp_high_counter=0; }
+  else {
+    temp_low_counter++;
+    temp_high_counter=0;
+    digitalWrite(GPIO_FAN, LOW);
+    fan_state=0;
+    }
+
+  if ( temp_high_counter > 15 ) {
+    digitalWrite(GPIO_FAN, HIGH);
+    fan_state=1; }
+  #endif
+
+  // If voltage is present - meaning no Transmission; radio receiving or squelched
+  if (digitalRead(TX_GND) == HIGH) {
+
+    // If we are monitoring RX time too
+    #ifdef RX_ON
 
       // Yaesu radio: Squelch Open, RX=HIGH
       if (digitalRead(RX_ON) == HIGH) {
       // Icom and Kenwood radio: Squelch open, RX=LOW
       // Comment the above "if" and uncomment the below "if".
       // (digitalRead(RX_ON) == LOW) {
-      
+
         // Reset timer if transitioned state
         if (LastState != "RX") {
           t=0;
@@ -284,20 +330,37 @@ void loop() {
     display.print(m); display.print(" ");
     if (s < 10) display.print(0);
     display.print(s);
-    
+
     #ifdef TEMP_SENS
     #ifdef TEMP_ON_TX
-    temperature = (float(analogRead(TEMP_SENS))*5/(1023))/0.01;
-    display.drawRect(54,9,18,15,WHITE);
-    display.setTextSize(1);
-    display.setCursor(57,13);
-    display.print(temperature);
-    #else
+    #ifdef GPIO_FAN
+    if (fan_state == 1 ) { // Fan on, temperature font/color inverted
+      display.fillRect(54,9,18,15,WHITE);
+      display.setTextSize(1);
+      display.setTextColor(BLACK);
+      display.setCursor(58,13);
+      display.print(temperature); 
+      display.setTextColor(WHITE); }
+    else {  // Fan off, just temperature inside a box.
+      display.drawRect(54,9,18,15,WHITE);
+      display.setTextSize(1);
+      display.setCursor(58,13);
+      display.print(temperature); }
+
+    #else // No Fan Control
+      display.drawRect(54,9,18,15,WHITE);
+      display.setTextSize(1);
+      display.setCursor(58,13);
+      display.print(temperature); }
+    #endif
+
+    #else // No Temperature on TX
     display.setTextSize(4);
     display.setCursor(55,2); // Print colon
     display.print(":");
     #endif
-    #else
+
+    #else // No Temperature sensor
     display.setTextSize(4);
     display.setCursor(55,2); // Print colon
     display.print(":");
