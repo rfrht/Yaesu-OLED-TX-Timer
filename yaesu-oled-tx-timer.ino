@@ -186,21 +186,30 @@ void printsquelch() {
 
   #ifdef MONITOR_STATE
     display.setTextSize(2);
-    display.setCursor(92,0);
+    display.setCursor(87,0);
     display.print("SQ");
   #endif
 
-  display.setTextSize(1);  // Smaller size
-  display.setCursor(80,25); // Bottom left of the screen
+  display.setTextSize(2);  // Medium size
+  display.setCursor(68,18); // Bottom left of the screen
 
   // Populate the timer. Used the 'if' trick to pad the seconds and minutes with a zero
   // when the actual number count is less than 10
-  if (h < 10) display.print(0);
-  display.print(h); display.print(":");
-  if (m < 10) display.print(0);
-  display.print(m); display.print(":");
-  if (s < 10) display.print(0);
-  display.print(s);
+  if (h < 1) {
+    if (m < 10) display.print(0);
+    display.print(m); display.print(":");
+    if (s < 10) display.print(0);
+    display.print(s);
+  }
+  else {
+    if (h < 10) display.print(0);
+    display.print(h); display.print("h");
+    if (m < 10) display.print(0);
+    display.print(m);
+  }
+        
+  // Draw a separator line and print it
+  display.drawLine(62, 0, 62, 31, WHITE);
   display.display();
 
   // Give it a second to sleep until next poll
@@ -269,20 +278,30 @@ void loop() {
         #endif
         #ifdef MONITOR_STATE
           display.setTextSize(2);
-          display.setCursor(92,15);
+          display.setCursor(87,18);
           display.print("RX");
         #endif
-        display.setTextSize(1);  // Smaller size
-        display.setCursor(80,0); // Better screen adjustment
+        // Where to print the elapsed RX time
+        display.setTextSize(2);  // Medium size
+        display.setCursor(68,0); // Better screen adjustment
 
         // Populate the timer. Used the 'if' trick to pad the seconds and minutes with a zero
         // when the actual number count is less than 10
-        if (h < 10) display.print(0);
-        display.print(h); display.print(":");
-        if (m < 10) display.print(0);
-        display.print(m); display.print(":");
-        if (s < 10) display.print(0);
-        display.print(s);
+        if (h < 1) {
+          if (m < 10) display.print(0);
+          display.print(m); display.print(":");
+          if (s < 10) display.print(0);
+          display.print(s);
+        }
+        else {
+          if (h < 10) display.print(0);
+          display.print(h); display.print("h");
+          if (m < 10) display.print(0);
+          display.print(m);
+        }
+        
+        // Draw a separator line and print it
+        display.drawLine(62, 0, 62, 31, WHITE);
         display.display();
 
         // Give it a second to sleep until next poll
