@@ -130,8 +130,8 @@ void blinkingdot() {
       display.print(du); display.print("d");
       if (hu < 10) display.print(0);
       display.print(hu);
-      if (du < 100) display.print("h"); // Strips the H suffix after 100 days
     }
+    
     display.setTextSize(1);
 
     // The temperature block
