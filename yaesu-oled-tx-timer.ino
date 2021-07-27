@@ -126,10 +126,10 @@ void blinkingdot() {
     }
     else {                   // More than a day; dd:hh
       hu = hu - ( du * 86400 / 3600);   // Calculate how many hours within the day.
-      if (du < 10) display.print(0);
       display.print(du); display.print("d");
       if (hu < 10) display.print(0);
       display.print(hu);
+      if (du < 10) display.print("h");  // add the h suffix if less than 10 days uptime
     }
     
     display.setTextSize(1);
