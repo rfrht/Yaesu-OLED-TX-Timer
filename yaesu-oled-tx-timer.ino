@@ -22,32 +22,33 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define GPIO_FAN       10   // The GPIO pin where we control the fan relay.
 #define RX_ON           4   // The GPIO pin where you connected the SQL signal
                             // Comment out to disable monitoring RX.
-#define TIME_ALERT    120  // TX time alert threshold (seconds)
-#define CALLSIGN "PY2RAF"  // Your callsign. Comment out to disable splash screen.
-#define TEMP_ON_TX      1  // Do we want to show the radio temperature in TX mode?
-#define TEMP_THRESHOLD 40  // Starts external fan when temp greater than this
-#define MONITOR_SQUELCH 1  // Monitor squelched time? If not desired, comment.
-#define MONITOR_UPTIME  1  // Monitor uptime? If not desired, comment.
-#define MONITOR_STATE   1  // Print SQ/RX state? If not desired, comment.
+#define TIME_ALERT    120   // TX time alert threshold (seconds)
+#define CALLSIGN "PY2RAF"   // Your callsign. Comment out to disable splash screen.
+#define TEMP_ON_TX      1   // Do we want to show the radio temperature in TX mode?
+#define TEMP_THRESHOLD 40   // Starts external fan when temp greater than this
+#define MONITOR_SQUELCH 1   // Monitor squelched time? If not desired, comment.
+#define MONITOR_UPTIME  1   // Monitor uptime? If not desired, comment.
+#define MONITOR_STATE   1   // Print SQ/RX state? If not desired, comment.
 
 // General variables
-unsigned long t;             // Timer (secs)
-unsigned long h;              // Derived timer hours
-unsigned long m;              // Derived timer Minutes
-unsigned long s;              // Derived timer seconds (60-second fraction)
-unsigned long t_event;        // Time-of-start (based on uptime) of event
-unsigned long u;             // Uptime (secs)
-unsigned long mu;             // Derived uptime minutes
-unsigned long hu;             // Derived uptime hours
-unsigned long du;             // Derived uptime days
-int temperature;        // Current temp; Celsius
-int temp_high_counter;  // Temperature above Threshold counter
-int temp_low_counter;   // Temperature under Threshold counter
-bool fan_state;         // Self Explanatory
-String LastState;       // The last active state used for proper timer tracking
+unsigned long t;            // Timer (secs)
+unsigned long h;            // Derived timer hours
+unsigned long m;            // Derived timer Minutes
+unsigned long s;            // Derived timer seconds (60-second fraction)
+unsigned long t_event;      // Time-of-start (based on uptime) of event
+unsigned long u;            // Uptime (secs)
+unsigned long mu;           // Derived uptime minutes
+unsigned long hu;           // Derived uptime hours
+unsigned long du;           // Derived uptime days
+int temperature;            // Current temp; Celsius
+int temp_high_counter;      // Temperature above Threshold counter
+int temp_low_counter;       // Temperature under Threshold counter
+bool fan_state;             // Self Explanatory
+String LastState;           // The last active state used for proper timer tracking
 
 void setup() {
-  Serial.begin(9600);   // Setup serial port for debug in case of display failure
+  // Setup serial port for debug in case of display failure
+  Serial.begin(9600);
 
   // Display initialization
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -112,6 +113,7 @@ void blinkingdot() {
     mu = u / 60 % 60;
     hu = u / 3600;
     du = u / 86400;
+    u++;
 
     // Uptime block
     display.setTextSize(2);  // Medium size
@@ -152,7 +154,6 @@ void blinkingdot() {
           }
         }
       #endif
-
     #else
       // If no temperature selected, just print uptime.
       display.setCursor(12,24);
@@ -191,6 +192,7 @@ void printsquelch() {
 
   display.setTextSize(2);  // Medium size
   display.setCursor(68,18); // Bottom left of the screen
+
   // Populate the timer. Used the 'if' trick to pad the seconds and minutes with a zero
   // when the actual number count is less than 10
   if (h < 1) {

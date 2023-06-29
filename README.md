@@ -48,6 +48,7 @@ Since Yaesu won't be providing me this anytime soon in their firmwares, I decide
 * Any Arduino board
 * Jumper wire
 * [OLED display](https://www.aliexpress.com/item/32819880935.html?spm=a2g0s.9042311.0.0.63724c4drSiqbI)
+* [Adafruit SSD1306 and Adafruit GFX](https://youtu.be/Srb6aqnZbME) libraries
 
 ## How do I?
 
