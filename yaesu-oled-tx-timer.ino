@@ -113,7 +113,6 @@ void blinkingdot() {
     mu = u / 60 % 60;
     hu = u / 3600;
     du = u / 86400;
-    u++;
 
     // Uptime block
     display.setTextSize(2);  // Medium size
@@ -405,3 +404,4 @@ void loop() {
     LastState = "TX";
     }
 }
+
