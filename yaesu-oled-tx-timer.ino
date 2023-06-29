@@ -22,33 +22,33 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define GPIO_FAN       10   // The GPIO pin where we control the fan relay.
 #define RX_ON           4   // The GPIO pin where you connected the SQL signal
                             // Comment out to disable monitoring RX.
-#define TIME_ALERT    120  // TX time alert threshold (seconds)
-#define CALLSIGN "PY2RAF"  // Your callsign. Comment out to disable splash screen.
-#define TEMP_ON_TX      1  // Do we want to show the radio temperature in TX mode?
-#define TEMP_THRESHOLD 40  // Starts external fan when temp greater than this
-#define MONITOR_SQUELCH 1  // Monitor squelched time? If not desired, comment.
-#define MONITOR_UPTIME  1  // Monitor uptime? If not desired, comment.
-#define MONITOR_STATE   1  // Print SQ/RX state? If not desired, comment.
+#define TIME_ALERT    120   // TX time alert threshold (seconds)
+#define CALLSIGN "PY2RAF"   // Your callsign. Comment out to disable splash screen.
+#define TEMP_ON_TX      1   // Do we want to show the radio temperature in TX mode?
+#define TEMP_THRESHOLD 40   // Starts external fan when temp greater than this
+#define MONITOR_SQUELCH 1   // Monitor squelched time? If not desired, comment.
+#define MONITOR_UPTIME  1   // Monitor uptime? If not desired, comment.
+#define MONITOR_STATE   1   // Print SQ/RX state? If not desired, comment.
 
 // General variables
-uint32_t t;             // Timer (secs)
-uint8_t h;              // Derived hours
-uint8_t m;              // Derived Minutes
-uint8_t s;              // Derived seconds (60-second fraction)
-uint32_t u;             // Uptime (secs)
-uint8_t mu;             // Derived uptime minutes
-uint8_t hu;             // Derived uptime hours
-uint8_t du;             // Derived uptime days
-int temperature;        // Current temp; Celsius
-int temp_high_counter;  // Temperature above Threshold counter
-int temp_low_counter;   // Temperature under Threshold counter
-bool fan_state;         // Self Explanatory
-String LastState;       // The last active state used for proper timer tracking
+unsigned long t;            // Timer (secs)
+unsigned long h;            // Derived timer hours
+unsigned long m;            // Derived timer Minutes
+unsigned long s;            // Derived timer seconds (60-second fraction)
+unsigned long t_event;      // Time-of-start (based on uptime) of event
+unsigned long u;            // Uptime (secs)
+unsigned long mu;           // Derived uptime minutes
+unsigned long hu;           // Derived uptime hours
+unsigned long du;           // Derived uptime days
+int temperature;            // Current temp; Celsius
+int temp_high_counter;      // Temperature above Threshold counter
+int temp_low_counter;       // Temperature under Threshold counter
+bool fan_state;             // Self Explanatory
+String LastState;           // The last active state used for proper timer tracking
 
 void setup() {
-   u = 0;              // Start uptime with zero seconds
-
-  Serial.begin(9600);   // Setup serial port for debug in case of display failure
+  // Setup serial port for debug in case of display failure
+  Serial.begin(9600);
 
   // Display initialization
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -131,7 +131,7 @@ void blinkingdot() {
       display.print(hu);
       if (du < 10) display.print("h");  // add the h suffix if less than 10 days uptime
     }
-    
+
     display.setTextSize(1);
 
     // The temperature block
@@ -150,11 +150,10 @@ void blinkingdot() {
         if (fan_state == 1) {
           if ( u % 2 == 0 ) {
             display.setCursor(69,15);
-            display.print((char)7); 
+            display.print((char)7);
           }
         }
       #endif
-
     #else
       // If no temperature selected, just print uptime.
       display.setCursor(12,24);
@@ -168,11 +167,12 @@ void blinkingdot() {
 void printsquelch() {
   // Reset timer if transitioned state
   if (LastState != "Squelch") {
-    t=0;
+    t_event = u;
     display.invertDisplay(false);
   }
 
   // Calculating the seconds, minutes and hours
+  t = u - t_event;
   s = t % 60;
   m = t / 60 %60;
   h = t / 3600;
@@ -207,7 +207,7 @@ void printsquelch() {
     if (m < 10) display.print(0);
     display.print(m);
   }
-        
+
   // Draw a separator line and print it
   display.drawLine(62, 0, 62, 31, WHITE);
   display.display();
@@ -215,17 +215,19 @@ void printsquelch() {
   // Give it a second to sleep until next poll
   delay(1000);
 
-  // Add another second to the timer and set state
-  t++;
+  // Set state
   LastState = "Squelch";
 }
 
 void loop() {
+  // Derive uptime from millis()
+  u = (millis() / 1000);
+
   #ifdef TEMP_SENS
     temperature = (float(analogRead(TEMP_SENS))*5/(1023))/0.01;
   #endif
 
-  // Control logic for fan. 
+  // Control logic for fan.
   // Runs the fan if temperature gets above threshold for 15 seconds in row.
   // Stops the fan if temperature gets below threshold for 2 minutes in row.
   #ifdef GPIO_FAN
@@ -244,7 +246,7 @@ void loop() {
 
     if ( temp_high_counter > 15 ) {
       digitalWrite(GPIO_FAN, HIGH);
-      fan_state=1; 
+      fan_state=1;
     }
   #endif
 
@@ -262,11 +264,12 @@ void loop() {
 
         // Reset timer if transitioned state
         if (LastState != "RX") {
-          t=0;
+          t_event = u;
           display.invertDisplay(false);
         }
 
         // Calculating the seconds, minutes and hours
+        t = u - t_event;
         s = t % 60;
         m = t / 60 %60;
         h = t / 3600;
@@ -276,6 +279,7 @@ void loop() {
         #ifdef MONITOR_UPTIME
           print_uptime();
         #endif
+
         #ifdef MONITOR_STATE
           display.setTextSize(2);
           display.setCursor(87,18);
@@ -299,7 +303,7 @@ void loop() {
           if (m < 10) display.print(0);
           display.print(m);
         }
-        
+
         // Draw a separator line and print it
         display.drawLine(62, 0, 62, 31, WHITE);
         display.display();
@@ -307,8 +311,7 @@ void loop() {
         // Give it a second to sleep until next poll
         delay(1000);
 
-        // Add another second to the timer and set state
-        t++;
+        // Set state
         LastState = "RX";
       }
 
@@ -333,11 +336,12 @@ void loop() {
   else {
     // Reset timer if radio changed state
     if (LastState != "TX") {
-      t=0 ;
+      t_event = u;
       display.invertDisplay(false);
     }
 
     // Calculating the seconds and minutes (no cap for minutes)
+    t = u - t_event;
     s = t % 60;
     m = t / 60;
 
@@ -361,7 +365,7 @@ void loop() {
             display.setTextSize(1);
             display.setTextColor(BLACK);
             display.setCursor(58,13);
-            display.print(temperature); 
+            display.print(temperature);
             display.setTextColor(WHITE); }
           else {  // Fan off, just temperature inside a box.
             display.drawRect(54,9,18,15,WHITE);
@@ -397,8 +401,7 @@ void loop() {
     // Give it a second to sleep until next poll
     delay(1000);
 
-    // Add another second to the timer and set state
-    t++;
+    // Set state
     LastState = "TX";
     }
 }
