@@ -31,14 +31,15 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define MONITOR_STATE   1  // Print SQ/RX state? If not desired, comment.
 
 // General variables
-uint32_t t;             // Timer (secs)
-uint8_t h;              // Derived hours
-uint8_t m;              // Derived Minutes
-uint8_t s;              // Derived seconds (60-second fraction)
-uint32_t u;             // Uptime (secs)
-uint8_t mu;             // Derived uptime minutes
-uint8_t hu;             // Derived uptime hours
-uint8_t du;             // Derived uptime days
+unsigned long t;             // Timer (secs)
+unsigned long h;              // Derived timer hours
+unsigned long m;              // Derived timer Minutes
+unsigned long s;              // Derived timer seconds (60-second fraction)
+unsigned long t_event;        // Time-of-start (based on uptime) of event
+unsigned long u;             // Uptime (secs)
+unsigned long mu;             // Derived uptime minutes
+unsigned long hu;             // Derived uptime hours
+unsigned long du;             // Derived uptime days
 int temperature;        // Current temp; Celsius
 int temp_high_counter;  // Temperature above Threshold counter
 int temp_low_counter;   // Temperature under Threshold counter
@@ -165,11 +166,12 @@ void blinkingdot() {
 void printsquelch() {
   // Reset timer if transitioned state
   if (LastState != "Squelch") {
-    t=0;
+    t_event = u;
     display.invertDisplay(false);
   }
 
   // Calculating the seconds, minutes and hours
+  t = u - t_event;
   s = t % 60;
   m = t / 60 %60;
   h = t / 3600;
@@ -189,7 +191,6 @@ void printsquelch() {
 
   display.setTextSize(2);  // Medium size
   display.setCursor(68,18); // Bottom left of the screen
-
   // Populate the timer. Used the 'if' trick to pad the seconds and minutes with a zero
   // when the actual number count is less than 10
   if (h < 1) {
@@ -212,8 +213,7 @@ void printsquelch() {
   // Give it a second to sleep until next poll
   delay(1000);
 
-  // Add another second to the timer and set state
-  t++;
+  // Set state
   LastState = "Squelch";
 }
 
@@ -262,11 +262,12 @@ void loop() {
 
         // Reset timer if transitioned state
         if (LastState != "RX") {
-          t=0;
+          t_event = u;
           display.invertDisplay(false);
         }
 
         // Calculating the seconds, minutes and hours
+        t = u - t_event;
         s = t % 60;
         m = t / 60 %60;
         h = t / 3600;
@@ -308,8 +309,7 @@ void loop() {
         // Give it a second to sleep until next poll
         delay(1000);
 
-        // Add another second to the timer and set state
-        t++;
+        // Set state
         LastState = "RX";
       }
 
@@ -334,11 +334,12 @@ void loop() {
   else {
     // Reset timer if radio changed state
     if (LastState != "TX") {
-      t=0 ;
+      t_event = u;
       display.invertDisplay(false);
     }
 
     // Calculating the seconds and minutes (no cap for minutes)
+    t = u - t_event;
     s = t % 60;
     m = t / 60;
 
@@ -398,8 +399,7 @@ void loop() {
     // Give it a second to sleep until next poll
     delay(1000);
 
-    // Add another second to the timer and set state
-    t++;
+    // Set state
     LastState = "TX";
     }
 }
