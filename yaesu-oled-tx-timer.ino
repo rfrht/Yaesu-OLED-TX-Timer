@@ -329,20 +329,17 @@ void loop() {
     }
 
     // Calculating the seconds and minutes (no cap for minutes)
-    t = u - t_event;
-    s = t % 60;
-    m = t / 60;
+    calc_event_time();
 
     // Clear the display buffer and prepare for new data
     display.clearDisplay();
     display.setTextSize(4);
     display.setCursor(5,2); // Better screen adjustment
 
-    // Populate the timer. Used the 'if' trick to pad the seconds and minutes with a zero
-    // when the actual number count is less than 10
-    if (m < 10) display.print(0);
+    // Print the TX time
+    if (m < 10) display.print(0);    // Pad with zero if less than ten
     display.print(m); display.print(" ");
-    if (s < 10) display.print(0);
+    if (s < 10) display.print(0);    // Pad with zero if less than ten
     display.print(s);
 
     #ifdef TEMP_SENS
