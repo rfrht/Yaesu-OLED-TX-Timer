@@ -47,8 +47,7 @@ bool fan_state;             // Self Explanatory
 String LastState;           // The last active state used for proper timer tracking
 
 void setup() {
-  // Setup serial port for debug in case of display failure
-  Serial.begin(9600);
+  Serial.begin(9600);       // Setup serial port for debug in case of display failure
 
   // Display initialization
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -107,6 +106,39 @@ void blinkingdot() {
 }
 #endif
 
+void printtime(){
+  if (h < 1) {                     // Up to 1 hour, Print mm:ss
+    if (m < 10) display.print(0);  // Pad with zero if less than ten
+    display.print(m); display.print(":");
+    if (s < 10) display.print(0);  // Pad with zero if less than ten
+    display.print(s);
+  }
+  else if (h < 100) {              // Less than 100 hours, Print hh h mm
+    if (h < 10) display.print(0);  // Pad with zero if less than ten
+    display.print(h); display.print("h");
+    if (m < 10) display.print(0);  // Pad with zero if less than ten
+    display.print(m);
+  }
+  else {                           // More than 100 hours, Print hhh h
+    display.print(h); display.print("h");
+  }
+
+  // Draw a separator line and print it
+  display.drawLine(62, 0, 62, 31, WHITE);
+  display.display();
+
+  // Give it a second to sleep until next poll
+  delay(1000);
+}
+
+void calc_event_time(){
+  // Calculate the event's seconds, minutes and hours
+  t = u - t_event;
+  s = t % 60;
+  m = t / 60 %60;
+  h = t / 3600;
+}
+
 #ifdef MONITOR_UPTIME
   // Print the current uptime
   void print_uptime(){
@@ -153,6 +185,7 @@ void blinkingdot() {
           }
         }
       #endif
+
     #else
       // If no temperature selected, just print uptime.
       display.setCursor(12,24);
@@ -171,10 +204,7 @@ void printsquelch() {
   }
 
   // Calculating the seconds, minutes and hours
-  t = u - t_event;
-  s = t % 60;
-  m = t / 60 %60;
-  h = t / 3600;
+  calc_event_time();
 
   // Clear the display buffer and prepare for new data
   display.clearDisplay();
@@ -192,27 +222,8 @@ void printsquelch() {
   display.setTextSize(2);  // Medium size
   display.setCursor(68,18); // Bottom left of the screen
 
-  // Populate the timer. Used the 'if' trick to pad the seconds and minutes with a zero
-  // when the actual number count is less than 10
-  if (h < 1) {
-    if (m < 10) display.print(0);
-    display.print(m); display.print(":");
-    if (s < 10) display.print(0);
-    display.print(s);
-  }
-  else {
-    if (h < 10) display.print(0);
-    display.print(h); display.print("h");
-    if (m < 10) display.print(0);
-    display.print(m);
-  }
-
-  // Draw a separator line and print it
-  display.drawLine(62, 0, 62, 31, WHITE);
-  display.display();
-
-  // Give it a second to sleep until next poll
-  delay(1000);
+  // Print the SQ timer
+  printtime();
 
   // Set state
   LastState = "Squelch";
@@ -268,10 +279,7 @@ void loop() {
         }
 
         // Calculating the seconds, minutes and hours
-        t = u - t_event;
-        s = t % 60;
-        m = t / 60 %60;
-        h = t / 3600;
+        calc_event_time();
 
         // Clear the display buffer and prepare for new data
         display.clearDisplay();
@@ -288,27 +296,8 @@ void loop() {
         display.setTextSize(2);  // Medium size
         display.setCursor(68,0); // Better screen adjustment
 
-        // Populate the timer. Used the 'if' trick to pad the seconds and minutes with a zero
-        // when the actual number count is less than 10
-        if (h < 1) {
-          if (m < 10) display.print(0);
-          display.print(m); display.print(":");
-          if (s < 10) display.print(0);
-          display.print(s);
-        }
-        else {
-          if (h < 10) display.print(0);
-          display.print(h); display.print("h");
-          if (m < 10) display.print(0);
-          display.print(m);
-        }
-
-        // Draw a separator line and print it
-        display.drawLine(62, 0, 62, 31, WHITE);
-        display.display();
-
-        // Give it a second to sleep until next poll
-        delay(1000);
+        // Print the RX timer
+        printtime();
 
         // Set state
         LastState = "RX";
@@ -404,4 +393,3 @@ void loop() {
     LastState = "TX";
     }
 }
-
