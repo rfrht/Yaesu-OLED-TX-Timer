@@ -61,12 +61,12 @@ In the `TUN/LIN` port use the `TX GND` pin for the TX and `DATA/RTTY` port `SQL`
 In older Yaesu radios look for the `BAND DATA`, `LINEAR`, `ACC`, `DATA`, `RTTY/PKT` ports and check for the `TX GND` and `SQL` outputs and respective pinouts.
 
 
-[![Yaesu Arduino OLED timer Connection Diagram](https://rf3.org:8443/q/yaesu-timer/yaesu-arduino-tx-rx-timer-pinout.jpg)](https://rf3.org:8443/q/yaesu-timer/yaesu-arduino-tx-timer-pinout.png)
+[![Yaesu Arduino OLED timer Connection Diagram](https://github.com/user-attachments/assets/a34ffee0-25cc-4d85-ac6e-5846bf17afd3)](https://github.com/user-attachments/assets/a34ffee0-25cc-4d85-ac6e-5846bf17afd3)
 
 *Yaesu equipment Connection diagram - click to enlarge*
 
 ### Icom Transceivers
-If your radio has the `ACC` or `ACC1` socket, Use the `SEND` port for the TX signaling - Connect it to `GPIO 2`, and `SQL S` for RX signaling: Connect it to `GPIO 4`.
+If your radio has the `ACC` or `ACC1` socket, Use the `SEND` port for the TX signaling - Connect it to `GPIO 1`, and `SQL S` for RX signaling: Connect it to `GPIO 4`.
 
 If your radio only has `ACC2` ports, tap only the `SEND` signal.
 
@@ -77,7 +77,7 @@ If your radio only has `ACC2` ports, tap only the `SEND` signal.
 ### Kenwood Transceivers
 Kenwood equipments does not provide a 13.8V port for powering the board - Tap it from your radio's power supply. **Do not** use an external wall wart for it; will add *noise* and ground loop funny business. No.
 
- In `ACC2` port, use the `PSQ` line and connect it to `GPIO 4`, since this is the Squelch signal. From the `REMOTE` port, use the `LKY` pin and connect it to `GPIO 2` - this is the TX line.
+ In `ACC2` port, use the `PSQ` line and connect it to `GPIO 4`, since this is the Squelch signal. From the `REMOTE` port, use the `LKY` pin and connect it to `GPIO 1` - this is the TX line.
 
 [![Kenwood Arduino OLED timer Connection Diagram](https://rf3.org:8443/q/yaesu-timer/diagram-kenwood.jpg)](https://rf3.org:8443/q/yaesu-timer/diagram-kenwood.png)
 
@@ -87,7 +87,7 @@ Kenwood equipments does not provide a 13.8V port for powering the board - Tap it
 
 * Remember to put the arduino board in the same ground reference. Preferentially, use the radio's 13.8V output if available. Otherwise, tap from the power supply. Do not use an external power supply - Will surely just add noise to your radio and you don't want that.
 
-* For the TX timer, look for your Linear connection - there's a standard that the transceiver drive a pin to ground during TX. Tap this pin to GPIO 2.
+* For the TX timer, look for your Linear connection - there's a standard that the transceiver drive a pin to ground during TX. Tap this pin to GPIO 1.
 
 * Now for the RX, look for the squelch pin - not every radio provides it. Be sure to check the level as well; some signals the squelch open in a +5V (Yaesu), others (Kenwood and Icom) signals squelch open as GND level. **DOUBLE CHECK THE VOLTAGE LEVEL** - Your arduino will release the magic smoke if you drive more than 5 volt in the GPIO line!
 
