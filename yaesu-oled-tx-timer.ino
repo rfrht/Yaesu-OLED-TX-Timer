@@ -1,23 +1,21 @@
 // Libraries to be used
-#include <SPI.h>
-#include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
 // Configure the Display
 #define SCREEN_WIDTH  128   // OLED display width, in pixels
 #define SCREEN_HEIGHT  32   // OLED display height, in pixels
-#define OLED_RESET      4   // Reset pin # (or -1 if sharing Arduino reset pin)
+#define OLED_RESET     -1   // Reset pin # (or -1 if sharing Arduino reset pin)
 
 // Setup the display driver with the above settings
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Are we using a temperature sensor? If we are not, comment this line.
 // The Temperature Sensor code is compatible with LM-35 sensors.
-#define TEMP_SENS      A0   // The Port where the temperature is being read
+//#define TEMP_SENS      A0 // The Port where the temperature is being read
 
 // Configure the GPIO pins
-#define TX_GND          2   // The GPIO pin where you connected the TXGND signal
+#define TX_GND          1   // The GPIO pin where you connected the TXGND signal
 #define PULLUP         13   // The GPIO pin that is driving TXGND up
 #define GPIO_FAN       10   // The GPIO pin where we control the fan relay.
 #define RX_ON           4   // The GPIO pin where you connected the SQL signal
@@ -47,14 +45,18 @@ bool fan_state;             // Self Explanatory
 String LastState;           // The last active state used for proper timer tracking
 
 void setup() {
-  Serial.begin(9600);       // Setup serial port for debug in case of display failure
-
+  //Serial.begin(9600);     // Setup serial port for debug in case of display failure
+  //while (!Serial);        // Keep this commented after you disconnect from your 
+                            // computer, otherwise the board will hang on this instruction
+  //Serial.print("Initiating setup/bootstrap\n");
+  
   // Display initialization
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
     Serial.println(F("SSD1306 allocation failed"));
     for(;;); // Don't proceed, loop forever
   }
+
+  Serial.print("Display setup completed\n");
 
   #ifdef RX_ON
     pinMode(RX_ON, INPUT);
@@ -93,6 +95,8 @@ void setup() {
 
   // Configure the TX_GND pin as a input GPIO
   pinMode(TX_GND, INPUT);
+
+  Serial.print("Finished setup\n");
 }
 
 #ifndef MONITOR_SQUELCH
