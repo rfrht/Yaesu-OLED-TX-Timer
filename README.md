@@ -65,6 +65,8 @@ In older Yaesu radios look for the `BAND DATA`, `LINEAR`, `ACC`, `DATA`, `RTTY/P
 
 *Yaesu equipment Connection diagram - click to enlarge*
 
+**NOTE:** I found that my FT-710 pinout of `TUN/LIN` port is **different**!!! Double-check your transceiver's pinout.
+
 ### Icom Transceivers
 If your radio has the `ACC` or `ACC1` socket, Use the `SEND` port for the TX signaling - Connect it to `GPIO 1`, and `SQL S` for RX signaling: Connect it to `GPIO 4`.
 
